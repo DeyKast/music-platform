@@ -1,31 +1,42 @@
-import { DataAPI } from './fetch-data';
-import Notiflix from 'notiflix';
-import axios from 'axios';
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
-const ChartCard = document.querySelector('.chart-card');
+const answerContainer = document.querySelector('.search-answer');
+let tracksList = '';
 
-export async function getTopChart() {
-  try {
-    const dataAPI = new DataAPI();
-    const topChart = await dataAPI.fetchTopChart();
-
-    if (topChart.data.length > 0) {
-      topChart.data.forEach(topChartList => {
-        createTopChartCard(topChartList);
-      });
-    } else {
-      Notiflix.Notify.warning('No data available');
-    }
-  } catch (error) {
-    Notiflix.Notify.info('Oops... Something went wrong(');
+export async function searchAnswerRender(tracks) {
+  if (tracks == null) {
+    tracksList = '';
+    answerContainer.innerHTML = tracksList;
+    return;
+  } else if (tracks.length < 1) {
+    Notify.info('tracks not found');
+    tracksList = '';
   }
+  tracks.forEach(track => {
+    const trackCard = `
+    <div class="track-card">
+    <div>
+    <img src="${track.album.images[2].url}" alt="">
+    
+    </div>
+    <div>
+    <p>${track.name}</p>
+    <p>${track.artists[0].name}</p>
+    </div>
+    </div>
+    `;
+    tracksList += trackCard;
+  });
+  answerContainer.innerHTML = tracksList;
+  tracksList = '';
 }
 
-function createTopChartCard(topChartList) {
-  console.log(topChartList);
-  const Card = `<p>${topChartList}</p>`;
+export default searchAnswerRender;
+// function createTopChartCard(topChartList) {
+//   console.log(topChartList);
+//   const Card = `<p>${topChartList}</p>`;
 
-  ChartCard.innerHTML += Card;
-}
+//   ChartCard.innerHTML += Card;
+// }
 
-getTopChart();
+// getTopChart();
