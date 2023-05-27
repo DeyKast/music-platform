@@ -48,7 +48,7 @@ async function getToken() {
       }
     );
 
-    TOKEN = response.data.access_token; // Збереження токену
+    TOKEN = response.data.access_token;
   } catch (error) {
     console.error('Failed to retrieve access token:', error);
     throw error;
@@ -67,7 +67,7 @@ async function searchQuery(query) {
     q: query,
     type: 'track',
     offset: '0',
-    limit: '10',
+    limit: '15',
   };
 
   try {
@@ -91,7 +91,7 @@ getToken()
   .then(() => {
     searchInput.addEventListener('input', event => {
       if (event.target.value != 0) {
-        debounced(event.target.value.trim(), false);
+        debounced(event.target.value.trim());
       } else {
         debounceNull(null);
         return;
