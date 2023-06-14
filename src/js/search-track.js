@@ -1,4 +1,5 @@
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import saveIDToLocalStorage from './like-track';
 
 const answerContainer = document.querySelector('.search-answer');
 const playerContainer = document.querySelector('.player');
@@ -24,6 +25,7 @@ export async function searchAnswerRender(tracks) {
           <p class="track-artist">${track.artists[0].name}</p>
         </div>
         <div class="track-actions">
+        <button class="like-button" data-id="${track.id}">&#127892</button>
           <button class="play-button" data-id="${track.id}">&#9205</button>
         </div>
       </div>
@@ -33,7 +35,6 @@ export async function searchAnswerRender(tracks) {
   answerContainer.innerHTML = tracksList;
   tracksList = '';
 
-  // Додавання обробника подій до кнопок "Play" після вставки їх в DOM
   const playButtons = answerContainer.querySelectorAll('.play-button');
   playButtons.forEach(button => {
     button.addEventListener('click', () => {
@@ -41,9 +42,16 @@ export async function searchAnswerRender(tracks) {
       playTrack(trackId);
     });
   });
+  const likeButtons = answerContainer.querySelectorAll('.like-button');
+  likeButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const trackId = button.dataset.id;
+      saveIDToLocalStorage(trackId);
+    });
+  });
 }
 
-function playTrack(trackId) {
+export function playTrack(trackId) {
   console.log('Playing track with ID:', trackId);
 
   const player = `<iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/${trackId}?utm_source=generator&theme=0" width="100%" height="250" frameBorder="0"  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;

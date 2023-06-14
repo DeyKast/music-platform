@@ -1,7 +1,9 @@
 const axios = require('axios').default;
 import _ from 'lodash';
 
-import searchAnswerRender from './first-subsection';
+import searchAnswerRender from './search-track';
+import recommendationsRender from './trends-list';
+import likedListRender from './liked-list';
 
 const searchInput = document.querySelector('.search-input');
 
@@ -24,7 +26,7 @@ searchInput.addEventListener('input', event => {
   }
 });
 
-let TOKEN = '';
+export let TOKEN = '';
 
 // ОТРИМАННЯ ТОКЕНУ
 async function getToken() {
@@ -86,9 +88,61 @@ async function searchQuery(query) {
   }
 }
 
+// GET TRENDS
+
+async function getTrends(token) {
+  if (!token) {
+    console.error('Invalid access token.');
+    return;
+  }
+
+  const searchEndpoint = 'https://api.spotify.com/v1/recommendations';
+  const queryParams = {
+    seed_tracks: '0c6xIDDpzE81m2q797ordA',
+  };
+
+  try {
+    const response = await axios.get(searchEndpoint, {
+      params: queryParams,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log(response.data.tracks);
+
+    recommendationsRender(response.data.tracks);
+  } catch (error) {
+    console.error('Failed to retrieve search:', error);
+    throw error;
+  }
+}
+
+async function getLiked(ID) {
+  if (!ID) {
+    console.error('NO LIKED');
+    return;
+  }
+
+  const searchEndpoint = `https://api.spotify.com/v1/tracks/${ID}`;
+
+  try {
+    const response = await axios.get(searchEndpoint, {
+      headers: {
+        Authorization: `Bearer ${TOKEN}`,
+      },
+    });
+
+    likedListRender(response.data);
+  } catch (error) {
+    console.error('Failed to retrieve search:', error);
+    throw error;
+  }
+}
+
 // Виклик функції отримання токену і пошуку
 getToken()
   .then(() => {
+    getTrends(TOKEN);
     searchInput.addEventListener('input', event => {
       if (event.target.value != 0) {
         debounced(event.target.value.trim());
@@ -98,6 +152,9 @@ getToken()
       }
     });
   })
+
   .catch(error => {
     console.error('Error:', error);
   });
+
+export default getLiked;
